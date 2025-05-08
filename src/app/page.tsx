@@ -127,24 +127,24 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-90"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-90"></div>
         <div className="absolute inset-0 bg-grid-white/[0.2] bg-[size:50px_50px]"></div>
         <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8">
           <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6 animate-fade-in">
-            Transforming Ideas into
+            Building Tomorrow's
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">
-              Digital Excellence
+              Successful Startups
             </span>
           </h1>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Expert software consulting services to help your business thrive in the digital age
+            Expert startup consulting and strategic guidance to help founders navigate the journey from idea to successful business
           </p>
           <div className="flex gap-4 justify-center">
             <Link
               href="#contact"
-              className="px-8 py-3 bg-white text-blue-600 rounded-full font-semibold hover:bg-opacity-90 transition-all transform hover:scale-105"
+              className="px-8 py-3 bg-white text-indigo-600 rounded-full font-semibold hover:bg-opacity-90 transition-all transform hover:scale-105"
             >
-              Get Started
+              Let's Talk
             </Link>
             <Link
               href="#services"
@@ -159,14 +159,14 @@ export default function Home() {
       {/* Services Section */}
       <section id="services" className="py-20 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Services</h2>
+          <h2 className="text-3xl font-bold text-center mb-12">How We Help Founders</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {services.map((service, index) => (
               <div
                 key={index}
                 className="bg-white dark:bg-gray-700 p-6 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
               >
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
+                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center mb-4">
                   {service.icon}
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
@@ -181,9 +181,9 @@ export default function Home() {
       <section id="contact" className="py-20 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Let's Build Something Amazing</h2>
+            <h2 className="text-3xl font-bold mb-4">Ready to Build Something Amazing?</h2>
             <p className="text-gray-600 dark:text-gray-300">
-              Ready to transform your business? Get in touch with us today.
+              Let's discuss how we can help turn your startup vision into reality.
             </p>
           </div>
           <div className="max-w-xl mx-auto">
@@ -202,7 +202,7 @@ export default function Home() {
                   maxLength={MAX_NAME_LENGTH}
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                  } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-transparent`}
                   placeholder="Your name"
                 />
                 {errors.name && (
@@ -222,7 +222,7 @@ export default function Home() {
                   required
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                  } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-transparent`}
                   placeholder="your@email.com"
                 />
                 {errors.email && (
@@ -243,7 +243,7 @@ export default function Home() {
                   rows={4}
                   className={`w-full px-4 py-2 rounded-lg border ${
                     errors.message ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                  } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
+                  } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-indigo-500 focus:border-transparent`}
                   placeholder="Tell us about your project"
                 ></textarea>
                 {errors.message && (
@@ -278,10 +278,10 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={formStatus === 'loading' || cooldownTime > 0}
-                className={`w-full px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold transition-all transform hover:scale-105 ${
+                className={`w-full px-8 py-3 bg-indigo-600 text-white rounded-lg font-semibold transition-all transform hover:scale-105 ${
                   (formStatus === 'loading' || cooldownTime > 0)
                     ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-blue-700'
+                    : 'hover:bg-indigo-700'
                 }`}
               >
                 {formStatus === 'loading' ? (
@@ -308,11 +308,11 @@ export default function Home() {
 
 const services = [
   {
-    title: "Web Development",
-    description: "Custom web applications built with modern technologies and best practices.",
+    title: "Startup Strategy",
+    description: "Comprehensive guidance on business model development, market positioning, and growth strategy.",
     icon: (
       <svg
-        className="w-6 h-6 text-blue-600"
+        className="w-6 h-6 text-indigo-600"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -321,17 +321,17 @@ const services = [
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth={2}
-          d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
         />
       </svg>
     ),
   },
   {
-    title: "Mobile Apps",
-    description: "Native and cross-platform mobile applications for iOS and Android.",
+    title: "Founder Advisory",
+    description: "Personalized coaching and mentorship to help founders navigate challenges and make informed decisions.",
     icon: (
       <svg
-        className="w-6 h-6 text-blue-600"
+        className="w-6 h-6 text-indigo-600"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -340,17 +340,17 @@ const services = [
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth={2}
-          d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
         />
       </svg>
     ),
   },
   {
-    title: "Enterprise Solutions",
-    description: "Scalable software solutions for businesses of all sizes.",
+    title: "Growth & Scale",
+    description: "Strategic guidance on scaling operations, team building, and securing funding for sustainable growth.",
     icon: (
       <svg
-        className="w-6 h-6 text-blue-600"
+        className="w-6 h-6 text-indigo-600"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -359,7 +359,7 @@ const services = [
           strokeLinecap="round"
           strokeLinejoin="round"
           strokeWidth={2}
-          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
         />
       </svg>
     ),
