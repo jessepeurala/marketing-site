@@ -1,7 +1,128 @@
+'use client';
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+
+const MAX_NAME_LENGTH = 100;
+const MAX_MESSAGE_LENGTH = 1000;
+const MIN_MESSAGE_LENGTH = 10;
+const RATE_LIMIT_COOLDOWN = 3600; // 1 hour in seconds
 
 export default function Home() {
+  const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [formMessage, setFormMessage] = useState('');
+  const [cooldownTime, setCooldownTime] = useState(0);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+  });
+  const [errors, setErrors] = useState({
+    name: '',
+    email: '',
+    message: '',
+  });
+
+  // Handle rate limit cooldown
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (cooldownTime > 0) {
+      timer = setInterval(() => {
+        setCooldownTime(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [cooldownTime]);
+
+  // Format cooldown time
+  const formatCooldownTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    return `${hours}h ${minutes}m ${remainingSeconds}s`;
+  };
+
+  const validateField = (name: string, value: string) => {
+    switch (name) {
+      case 'name':
+        if (value.length < 2) return 'Name must be at least 2 characters';
+        if (value.length > MAX_NAME_LENGTH) return `Name must be less than ${MAX_NAME_LENGTH} characters`;
+        return '';
+      case 'email':
+        if (!value) return 'Email is required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email address';
+        return '';
+      case 'message':
+        if (value.length < MIN_MESSAGE_LENGTH) return `Message must be at least ${MIN_MESSAGE_LENGTH} characters`;
+        if (value.length > MAX_MESSAGE_LENGTH) return `Message must be less than ${MAX_MESSAGE_LENGTH} characters`;
+        return '';
+      default:
+        return '';
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: validateField(name, value) }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    // Validate all fields
+    const newErrors = {
+      name: validateField('name', formData.name),
+      email: validateField('email', formData.email),
+      message: validateField('message', formData.message),
+    };
+    
+    setErrors(newErrors);
+    
+    // Check if there are any errors
+    if (Object.values(newErrors).some(error => error)) {
+      return;
+    }
+
+    setFormStatus('loading');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setFormStatus('success');
+        setFormMessage(result.message);
+        setFormData({ name: '', email: '', message: '' });
+      } else {
+        setFormStatus('error');
+        setFormMessage(result.error || 'Something went wrong. Please try again.');
+        
+        // Handle rate limit error
+        if (response.status === 429) {
+          setCooldownTime(RATE_LIMIT_COOLDOWN);
+        }
+      }
+    } catch (error) {
+      setFormStatus('error');
+      setFormMessage('Something went wrong. Please try again.');
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -66,7 +187,7 @@ export default function Home() {
             </p>
           </div>
           <div className="max-w-xl mx-auto">
-            <form className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium mb-2">
                   Name
@@ -74,9 +195,19 @@ export default function Home() {
                 <input
                   type="text"
                   id="name"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  maxLength={MAX_NAME_LENGTH}
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                   placeholder="Your name"
                 />
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium mb-2">
@@ -85,9 +216,18 @@ export default function Home() {
                 <input
                   type="email"
                   id="email"
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                   placeholder="your@email.com"
                 />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
               <div>
                 <label htmlFor="message" className="block text-sm font-medium mb-2">
@@ -95,16 +235,68 @@ export default function Home() {
                 </label>
                 <textarea
                   id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  maxLength={MAX_MESSAGE_LENGTH}
                   rows={4}
-                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    errors.message ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                  } bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
                   placeholder="Tell us about your project"
                 ></textarea>
+                {errors.message && (
+                  <p className="mt-1 text-sm text-red-500">{errors.message}</p>
+                )}
+                <p className="mt-1 text-sm text-gray-500">
+                  {formData.message.length}/{MAX_MESSAGE_LENGTH} characters
+                </p>
               </div>
+              
+              {cooldownTime > 0 && (
+                <div className="p-4 bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-100 rounded-lg">
+                  <p className="font-medium">Rate limit reached</p>
+                  <p className="text-sm mt-1">
+                    Please wait {formatCooldownTime(cooldownTime)} before submitting again.
+                  </p>
+                </div>
+              )}
+
+              {formMessage && (
+                <div
+                  className={`p-4 rounded-lg ${
+                    formStatus === 'success'
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100'
+                  }`}
+                >
+                  {formMessage}
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="w-full px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105"
+                disabled={formStatus === 'loading' || cooldownTime > 0}
+                className={`w-full px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold transition-all transform hover:scale-105 ${
+                  (formStatus === 'loading' || cooldownTime > 0)
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:bg-blue-700'
+                }`}
               >
-                Send Message
+                {formStatus === 'loading' ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Sending...
+                  </span>
+                ) : cooldownTime > 0 ? (
+                  `Wait ${formatCooldownTime(cooldownTime)}`
+                ) : (
+                  'Send Message'
+                )}
               </button>
             </form>
           </div>
